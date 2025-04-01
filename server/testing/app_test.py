@@ -1,6 +1,11 @@
-from models import Restaurant, RestaurantPizza, Pizza
-from app import app, db
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from flask import json
 from faker import Faker
+from app import app, db
+from models import Restaurant, Pizza, RestaurantPizza
 
 
 class TestApp:
