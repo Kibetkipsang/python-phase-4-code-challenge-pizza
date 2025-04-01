@@ -35,7 +35,6 @@ def get_restaurant_by_id(id):
         restaurant = Restaurant.query.get(id)
         if not restaurant:
             return jsonify({"error": "Restaurant not found"}), 404
-        
         restaurant_data = {
             "id": restaurant.id,
             "name": restaurant.name,
@@ -64,10 +63,8 @@ def delete_restaurants(id):
     restaurant = Restaurant.query.get(id)
     if not restaurant:
         return jsonify({"error": "Restaurant not found"}), 404
-    
     db.session.delete(restaurant)
     db.session.commit()
-    
     return "", 204
 
 @app.route("/pizzas", methods=['GET'])
@@ -83,9 +80,6 @@ def get_pizzas():
         return jsonify({"error": str(e)}), 500
 
 
-
-
-
 @app.route('/restaurant_pizzas', methods=['POST'])
 def create_restaurant_pizza():
     
@@ -94,53 +88,40 @@ def create_restaurant_pizza():
         return jsonify({"errors": ["validation errors"]}), 400
     
     try:
-        data = request.get_json()
-        
+        data = request.get_json()       
         def get_field(data, possible_names):
             for name in possible_names:
                 if name in data:
                     return data[name]
             return None
-        
         price = get_field(data, ['price', 'Price'])
         pizza_id = get_field(data, ['pizza_id', 'pizzaId', 'PizzaId'])
         restaurant_id = get_field(data, ['restaurant_id', 'restaurantId', 'RestaurantId'])
-        
-       
         if None in (price, pizza_id, restaurant_id):
             missing = []
             if price is None: missing.append("price")
             if pizza_id is None: missing.append("pizza_id")
             if restaurant_id is None: missing.append("restaurant_id")
-            return jsonify({"errors": ["validation errors"]}), 400
-        
-        
+            return jsonify({"errors": ["validation errors"]}), 400        
         try:
             price = int(price)
             pizza_id = int(pizza_id)
             restaurant_id = int(restaurant_id)
         except (ValueError, TypeError):
             return jsonify({"errors": ["validation errors"]}), 400
-        
-  
         if not 1 <= price <= 30:
-            return jsonify({"errors": ["validation errors"]}), 400
-            
-      
+            return jsonify({"errors": ["validation errors"]}), 400      
         restaurant = Restaurant.query.get(restaurant_id)
         pizza = Pizza.query.get(pizza_id)
         if not restaurant or not pizza:
-            return jsonify({"errors": ["validation errors"]}), 400
-        
-      
+            return jsonify({"errors": ["validation errors"]}), 400     
         rp = RestaurantPizza(
             price=price,
             pizza_id=pizza_id,
             restaurant_id=restaurant_id
         )
         db.session.add(rp)
-        db.session.commit()
-        
+        db.session.commit()        
         return jsonify({
             "id": rp.id,
             "price": rp.price,
